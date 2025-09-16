@@ -59,6 +59,17 @@ export class MainMenu extends Phaser.Scene {
         const height = this.sys.game.config.height;
         const isMobile = width < 600 || height < 700;
         const centerX = width / 2;
+        const centerY = height / 2;
+
+        // Store layout info globally for access across components
+        this.layout = {
+            width,
+            height,
+            centerX,
+            centerY,
+            isMobile,
+            scale: Math.min(width / 900, height / 700)
+        };
 
         // Create stunning animated background
         const bgGradient = this.add.graphics();
@@ -475,7 +486,7 @@ export class MainMenu extends Phaser.Scene {
             // Disable main menu buttons while overlay is open
             this.disableMainMenuButtons();
 
-            const title = this.add.text(450, 300, 'Power-Ups', {
+            const title = this.add.text(this.layout.centerX, this.layout.height * 0.43, 'Power-Ups', {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 36,
                 fill: '#ffffff',
@@ -492,9 +503,9 @@ export class MainMenu extends Phaser.Scene {
             // Coins display with gradient background
             const coinsBg = this.add.graphics();
             coinsBg.fillGradientStyle(0xffd700, 0xffd700, 0xffed4e, 0xffed4e);
-            coinsBg.fillRoundedRect(450 - 80, 340 - 20, 160, 40, 10);
+            coinsBg.fillRoundedRect(this.layout.centerX - 80, this.layout.height * 0.49 - 20, 160, 40, 10);
 
-            const coinsText = this.add.text(450, 340, `Coins: ${coins}`, {
+            const coinsText = this.add.text(this.layout.centerX, this.layout.height * 0.49, `Coins: ${coins}`, {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 20,
                 fill: '#000000',
@@ -592,7 +603,7 @@ export class MainMenu extends Phaser.Scene {
                 y += 56;
             });
             // Add close button
-            const closeBtn = this.add.text(450, 580, 'Close', {
+            const closeBtn = this.add.text(this.layout.centerX, this.layout.height * 0.83, 'Close', {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 24,
                 fill: '#ffffff',
@@ -654,7 +665,7 @@ export class MainMenu extends Phaser.Scene {
             // Disable main menu buttons while overlay is open
             this.disableMainMenuButtons();
 
-            const title = this.add.text(450, 260, 'Adventure Mode', {
+            const title = this.add.text(this.layout.centerX, this.layout.height * 0.37, 'Adventure Mode', {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 36,
                 fill: '#ffffff',
@@ -695,10 +706,10 @@ export class MainMenu extends Phaser.Scene {
                 }
 
                 btnBg.fillGradientStyle(primaryColor, primaryColor, secondaryColor, secondaryColor);
-                btnBg.fillRoundedRect(450 - btnWidth / 2, y - btnHeight / 2, btnWidth, btnHeight, 12);
+                btnBg.fillRoundedRect(this.layout.centerX - btnWidth / 2, y - btnHeight / 2, btnWidth, btnHeight, 12);
                 btnBg.setAlpha(unlocked ? 1.0 : 0.7);
 
-                const txt = this.add.text(450, y, label, {
+                const txt = this.add.text(this.layout.centerX, y, label, {
                     fontFamily: 'Poppins, sans-serif',
                     fontSize: 20,
                     fill: unlocked ? '#ffffff' : '#cccccc',
@@ -721,7 +732,7 @@ export class MainMenu extends Phaser.Scene {
                 y += 45;
             });
             // Progress text
-            const progressText = this.add.text(450, 560, `Progress: ${progress.completedChapters ? progress.completedChapters.length : 0}/${ADVENTURE_CHAPTERS.length} chapters completed`, {
+            const progressText = this.add.text(this.layout.centerX, this.layout.height * 0.8, `Progress: ${progress.completedChapters ? progress.completedChapters.length : 0}/${ADVENTURE_CHAPTERS.length} chapters completed`, {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 20,
                 fill: '#ffffff',
@@ -731,7 +742,7 @@ export class MainMenu extends Phaser.Scene {
                 padding: { left: 18, right: 18, top: 6, bottom: 6 }
             }).setOrigin(0.5);
             // Add close button
-            const closeBtn = this.add.text(450, 600, 'Close', {
+            const closeBtn = this.add.text(this.layout.centerX, this.layout.height * 0.86, 'Close', {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 24,
                 fill: '#ffffff',
@@ -855,7 +866,7 @@ export class MainMenu extends Phaser.Scene {
             // Disable main menu buttons while overlay is open
             this.disableMainMenuButtons();
 
-            const title = this.add.text(450, 220, 'Puzzle Packs', {
+            const title = this.add.text(this.layout.centerX, this.layout.height * 0.31, 'Puzzle Packs', {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 38,
                 fill: '#ffffff',
@@ -871,7 +882,7 @@ export class MainMenu extends Phaser.Scene {
             }).setOrigin(0.5);
             // Pack buttons with main menu styling
             const packButtons = [];
-            const centerX = 450;
+            const centerX = this.layout.centerX;
             packs.forEach((pack, idx) => {
                 const y = 300 + idx * 55;
                 const done = pack.puzzles.filter(pid => completed.includes(pid)).length;
@@ -987,10 +998,10 @@ export class MainMenu extends Phaser.Scene {
             // Start Game button with main menu styling
             const startBtnBg = this.add.graphics();
             startBtnBg.fillGradientStyle(0x22aa22, 0x22aa22, 0x44cc44, 0x44cc44);
-            startBtnBg.fillRoundedRect(450 - 120, 650 - 25, 240, 50, 12);
+            startBtnBg.fillRoundedRect(this.layout.centerX - 120, this.layout.height * 0.93 - 25, 240, 50, 12);
             startBtnBg.setAlpha(0.7);
 
-            const startBtn = this.add.text(450, 650, 'Start Game', {
+            const startBtn = this.add.text(this.layout.centerX, this.layout.height * 0.93, 'Start Game', {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 24,
                 fill: '#ffffff',
@@ -1155,7 +1166,7 @@ export class MainMenu extends Phaser.Scene {
             // Disable main menu buttons while overlay is open
             this.disableMainMenuButtons();
 
-            const title = this.add.text(450, 300, 'Statistics', {
+            const title = this.add.text(this.layout.centerX, this.layout.height * 0.43, 'Statistics', {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 36,
                 fill: '#ffffff',
@@ -1171,7 +1182,7 @@ export class MainMenu extends Phaser.Scene {
             }).setOrigin(0.5);
             // Improved stats logic (from game scene)
             let statTextStr = `Best Score (Easy): ${stats.bestScoreEasy || 0}\nBest Score (Difficult): ${stats.bestScoreDifficult || 0}\nBest Score (Endless): ${stats.bestScoreEndless || 0}\nTotal Games: ${stats.totalGames || 0}\nTotal Endless Games: ${stats.totalEndlessGames || 0}\nTotal Lines Cleared: ${stats.totalLines || 0}\nPuzzles Solved: ${stats.puzzlesSolved || 0}\nLongest Streak: ${stats.longestStreak || 0}\nCurrent Streak: ${stats.currentStreak || 0}\nCoins: ${coins}`;
-            const statText = this.add.text(450, 400, statTextStr, {
+            const statText = this.add.text(this.layout.centerX, this.layout.height * 0.57, statTextStr, {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 22,
                 fill: '#ffffff',
@@ -1182,7 +1193,7 @@ export class MainMenu extends Phaser.Scene {
                 align: 'center'
             }).setOrigin(0.5);
             // Add close button
-            const closeBtn = this.add.text(450, 520, 'Close', {
+            const closeBtn = this.add.text(this.layout.centerX, this.layout.height * 0.74, 'Close', {
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: 24,
                 fill: '#ffffff',

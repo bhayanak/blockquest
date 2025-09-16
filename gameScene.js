@@ -74,30 +74,61 @@ export class GameScene extends Phaser.Scene {
     // Background
     this.cameras.main.setBackgroundColor('#222');
 
+    // Responsive layout setup
+    const width = this.sys.game.config.width;
+    const height = this.sys.game.config.height;
+    const isMobile = width < 600;
+    const centerX = width / 2;
+
     // Title
-    this.add.text(450, 40, 'TimberTiles', {
+    this.add.text(centerX, height * 0.06, 'TimberTiles', {
       fontFamily: 'Arial',
-      fontSize: 48,
+      fontSize: isMobile ? 32 : 48,
       color: '#fff',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    // Score panel
-    this.scoreText = this.add.text(40, 20, 'Score: 0', { fontSize: 24, color: '#fff' });
-    this.highScoreText = this.add.text(700, 20, 'High Score: 0', { fontSize: 24, color: '#fff' });
+    // Score panel - responsive positioning
+    this.scoreText = this.add.text(20, 20, 'Score: 0', {
+      fontSize: isMobile ? 18 : 24,
+      color: '#fff'
+    });
+    this.highScoreText = this.add.text(width - 20, 20, 'High Score: 0', {
+      fontSize: isMobile ? 18 : 24,
+      color: '#fff'
+    }).setOrigin(1, 0);
+
     // Coin display (top right)
     import('./powerups.js').then(module => {
-      this.coinText = this.add.text(700, 60, 'Coins: ' + (module.getCoins ? module.getCoins() : 0), { fontSize: 24, color: '#ffd700', backgroundColor: '#222', padding: { left: 12, right: 12, top: 6, bottom: 6 } });
+      this.coinText = this.add.text(width - 20, isMobile ? 45 : 60, 'Coins: ' + (module.getCoins ? module.getCoins() : 0), {
+        fontSize: isMobile ? 18 : 24,
+        color: '#ffd700',
+        backgroundColor: '#222',
+        padding: { left: 12, right: 12, top: 6, bottom: 6 }
+      }).setOrigin(1, 0);
       this.children.bringToTop(this.coinText);
       this.updateCoinDisplay = () => {
         this.coinText.setText('Coins: ' + (module.getCoins ? module.getCoins() : 0));
       };
     });
 
-    // Grid container
-    this.gridOrigin = { x: 150, y: 100 };
+    // Responsive grid container
     this.gridSize = 9;
-    this.cellSize = 48;
+    let baseCellSize;
+    if (isMobile) {
+      baseCellSize = Math.max(30, Math.min(45, (width - 40) / this.gridSize));
+    } else {
+      baseCellSize = Math.max(40, Math.min(55, (width - 100) / this.gridSize));
+    }
+    this.cellSize = Math.round(baseCellSize);
+
+    const gridWidth = this.gridSize * this.cellSize;
+    const gridTopMargin = isMobile ? height * 0.15 : height * 0.14;
+
+    this.gridOrigin = {
+      x: (width - gridWidth) / 2,
+      y: gridTopMargin
+    };
     this.gridGraphics = this.add.graphics();
     this.drawGrid();
 

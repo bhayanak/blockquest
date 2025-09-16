@@ -166,14 +166,16 @@ export class GameScene extends Phaser.Scene {
     this.puzzleSelectionButtons = [];
     const theme = GameScene.getActiveTheme();
     this.puzzleSelectionOverlay = this.add.rectangle(450, 450, 500, 400, theme.overlay, theme.overlayAlpha).setOrigin(0.5);
-    this.puzzleSelectionTitle = this.add.text(450, 300, 'Select Puzzle', { fontFamily: 'Arial', fontSize: 32, color: theme.text, fontStyle: 'bold' }).setOrigin(0.5);
+    const centerX = this.sys.game.config.width / 2;
+    const centerY = this.sys.game.config.height / 2;
+    this.puzzleSelectionTitle = this.add.text(centerX, centerY * 0.86, 'Select Puzzle', { fontFamily: 'Arial', fontSize: 32, color: theme.text, fontStyle: 'bold' }).setOrigin(0.5);
     const pack = PUZZLE_PACKS[packIdx];
     const completed = loadCompletedPuzzles();
     let y = 360;
     pack.puzzles.forEach(pid => {
       const isCompleted = completed.includes(pid);
       const label = isCompleted ? `Puzzle #${pid + 1} (Done)` : `Puzzle #${pid + 1}`;
-      const btn = this.add.text(450, y, label, {
+      const btn = this.add.text(centerX, y, label, {
         fontSize: 22,
         color: isCompleted ? '#aaa' : theme.button.color,
         backgroundColor: isCompleted ? '#333' : theme.button.background,
@@ -199,9 +201,37 @@ export class GameScene extends Phaser.Scene {
     // Set up grid for puzzle
     this.gridState = pdata.grid.map(row => row.slice());
     this.gridSize = pdata.grid.length;
-    this.cellSize = 60;
-    this.gridOrigin = { x: 120, y: 120 };
-    this.trayOrigin = { x: 120, y: 780 };
+
+    // Responsive sizing for puzzle mode
+    const width = this.sys.game.config.width;
+    const height = this.sys.game.config.height;
+    const isMobile = width < 600;
+    const isSmallMobile = width < 450;
+
+    // Scale cell size based on screen size and grid size
+    let baseCellSize;
+    if (isSmallMobile) baseCellSize = Math.max(25, (width - 40) / this.gridSize);
+    else if (isMobile) baseCellSize = Math.max(35, (width - 60) / this.gridSize);
+    else baseCellSize = Math.max(45, Math.min(60, (width - 100) / this.gridSize));
+
+    this.cellSize = Math.round(baseCellSize);
+
+    // Center grid positioning
+    const gridWidth = this.gridSize * this.cellSize;
+    const gridHeight = this.gridSize * this.cellSize;
+    const gridTopMargin = isMobile ? (isSmallMobile ? 140 : 150) : 120;
+
+    this.gridOrigin = {
+      x: (width - gridWidth) / 2,
+      y: gridTopMargin
+    };
+
+    // Position tray below grid
+    const traySpacing = isMobile ? (isSmallMobile ? 25 : 30) : 40;
+    this.trayOrigin = {
+      x: this.gridOrigin.x,
+      y: this.gridOrigin.y + gridHeight + traySpacing
+    };
     // Initialize tray and tray shapes for puzzle mode
     if (!this.tray) {
       this.tray = new Tray(this, { gridSize: this.gridSize, cellSize: this.cellSize, trayOrigin: this.trayOrigin });
@@ -235,7 +265,7 @@ export class GameScene extends Phaser.Scene {
     this.puzzleGoal = pdata.goal;
     // Optionally show puzzle goal
     if (this.puzzleGoalText) this.puzzleGoalText.destroy();
-    this.puzzleGoalText = this.add.text(450, 60, `Goal: ${pdata.goal}`, {
+    this.puzzleGoalText = this.add.text(width / 2, height * 0.09, `Goal: ${pdata.goal}`, {
       fontSize: 20,
       color: '#fff',
       backgroundColor: '#222',
@@ -281,7 +311,9 @@ export class GameScene extends Phaser.Scene {
         this.puzzleActive = false;
         // Show success and return to pack menu after delay
         if (this.puzzleGoalText) this.puzzleGoalText.destroy();
-        this.puzzleGoalText = this.add.text(450, 60, 'Puzzle Completed!', {
+        const gameWidth = this.sys.game.config.width;
+        const gameHeight = this.sys.game.config.height;
+        this.puzzleGoalText = this.add.text(gameWidth / 2, gameHeight * 0.09, 'Puzzle Completed!', {
           fontSize: 24,
           color: '#0f0',
           backgroundColor: '#222',
@@ -1263,8 +1295,10 @@ export class GameScene extends Phaser.Scene {
         if (type === 'row') promptText = 'Enter row (1-10) to remove:';
         else if (type === 'col') promptText = 'Enter column (1-10) to remove:';
         else promptText = 'Click a block to remove.';
-        this.endlessPromptOverlay = this.add.rectangle(450, 450, 400, 180, 0x222222, 0.9).setOrigin(0.5);
-        this.endlessPromptText = this.add.text(450, 420, promptText, {
+        const centerX = this.sys.game.config.width / 2;
+        const centerY = this.sys.game.config.height / 2;
+        this.endlessPromptOverlay = this.add.rectangle(centerX, centerY, 400, 180, 0x222222, 0.9).setOrigin(0.5);
+        this.endlessPromptText = this.add.text(centerX, centerY - 30, promptText, {
           fontSize: 22,
           color: '#ffd700',
           backgroundColor: '#222',
@@ -1328,7 +1362,9 @@ export class GameScene extends Phaser.Scene {
         }
       };
       // Optionally, show endless mode banner
-      this.endlessBanner = this.add.text(450, 40, 'Endless Mode', {
+      const bannerWidth = this.sys.game.config.width;
+      const bannerHeight = this.sys.game.config.height;
+      this.endlessBanner = this.add.text(bannerWidth / 2, bannerHeight * 0.06, 'Endless Mode', {
         fontSize: 28,
         color: '#0ff',
         backgroundColor: '#222',

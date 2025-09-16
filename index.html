@@ -2,12 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>BlockQuest</title>
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; background: #222; }
-    #game-container { width: 100vw; height: 100vh; }
+    html, body { 
+      height: 100%; 
+      margin: 0; 
+      padding: 0; 
+      background: #222; 
+      overflow: hidden;
+      font-family: 'Poppins', Arial, sans-serif;
+    }
+    #game-container { 
+      width: 100vw; 
+      height: 100vh; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    canvas {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+    }
   </style>
 </head>
 <body>
