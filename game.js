@@ -398,16 +398,14 @@ export class GameScene extends Phaser.Scene {
     const gridWidth = this.gridSize * this.cellSize;
     const gridHeight = this.gridSize * this.cellSize;
 
-    // Center the grid horizontally and position it below the UI elements
-    const gridTopMargin = isMobile ? (isSmallMobile ? 160 : 170) : (isWideScreen ? 120 : 130);
+    // Left-align the grid for better mobile/tablet experience
+    const gridTopMargin = isMobile ? (isSmallMobile ? 140 : 150) : (isWideScreen ? 120 : 130);
 
-    // Ensure grid doesn't exceed screen bounds with proper padding
-    const gridSidePadding = isMobile ? (isSmallMobile ? 10 : 15) : 20;
-    const maxGridX = width - gridWidth - gridSidePadding;
-    const centeredGridX = (width - gridWidth) / 2;
+    // Left-align with minimal padding for more space
+    const gridSidePadding = isMobile ? (isSmallMobile ? 8 : 10) : 15;
 
     this.gridOrigin = {
-      x: Math.max(gridSidePadding, Math.min(centeredGridX, maxGridX)),
+      x: gridSidePadding,
       y: gridTopMargin
     };
 
@@ -596,10 +594,10 @@ export class GameScene extends Phaser.Scene {
           this.coinText.setText('⭑ ' + (mod.getCoins ? mod.getCoins() : 0));
         });
       };
-      // Power-up UI panel with vibrant modern design
-      const panelX = isMobile ? width - 110 : 820;
+      // Power-up UI panel with compact design positioned on right
+      const panelX = isMobile ? width - 70 : width - 90;
       const panelY = isMobile ? 280 : 220;
-      const panelBg = this.add.rectangle(panelX, panelY, isMobile ? 180 : 200, 170, 0x1a1a2e, 0.95).setOrigin(0.5);
+      const panelBg = this.add.rectangle(panelX, panelY, isMobile ? 130 : 150, 150, 0x1a1a2e, 0.95).setOrigin(0.5);
       panelBg.setStrokeStyle(3, 0x16213e);
 
       const typeLabels = { CLEAR_ROW: 'Row', SWAP_TRAY: 'Swap', EXTRA_UNDO: 'Undo' };
@@ -608,8 +606,8 @@ export class GameScene extends Phaser.Scene {
         { primary: 0x00bcd4, secondary: 0x4dd0e1 }, // Cyan  
         { primary: 0x4caf50, secondary: 0x81c784 }  // Green
       ];
-      const yStart = panelY - 60;
-      const yStep = 44;
+      const yStart = panelY - 50;
+      const yStep = 36;
       this.powerupButtons = {};
 
       Object.keys(module.POWERUP_TYPES).forEach((type, idx) => {
@@ -617,19 +615,30 @@ export class GameScene extends Phaser.Scene {
         const label = `${typeLabels[type] || type} (${count})`;
         const colors = buttonColors[idx];
 
-        // Create gradient background for each button
-        const btnBg = this.add.rectangle(panelX, yStart + idx * yStep, isMobile ? 160 : 180, 36, colors.primary, count > 0 ? 1 : 0.4).setOrigin(0.5);
+        // Create compact button that fits text content
+        const textMetrics = this.add.text(0, 0, label, {
+          fontFamily,
+          fontSize: isMobile ? 16 : 18,
+          fontStyle: 'bold'
+        });
+        const textWidth = textMetrics.width;
+        const textHeight = textMetrics.height;
+        textMetrics.destroy();
+
+        const btnWidth = Math.max(textWidth + 16, isMobile ? 80 : 90);
+        const btnHeight = Math.max(textHeight + 8, 28);
+
+        const btnBg = this.add.rectangle(panelX, yStart + idx * yStep, btnWidth, btnHeight, colors.primary, count > 0 ? 1 : 0.4).setOrigin(0.5);
         btnBg.setStrokeStyle(2, colors.secondary);
         this.add.graphics()
           .fillGradientStyle(colors.primary, colors.secondary, colors.primary, colors.secondary)
-          .fillRoundedRect(panelX - (isMobile ? 78 : 88), yStart + idx * yStep - 16, isMobile ? 156 : 176, 32, 6);
+          .fillRoundedRect(panelX - btnWidth / 2, yStart + idx * yStep - btnHeight / 2, btnWidth, btnHeight, 6);
 
         const btn = this.add.text(panelX, yStart + idx * yStep, label, {
           fontFamily,
-          fontSize: isMobile ? 18 : 20,
+          fontSize: isMobile ? 16 : 18,
           color: '#ffffff',
-          fontStyle: 'bold',
-          shadow: { offsetX: 1, offsetY: 1, color: 'rgba(0,0,0,0.12)', blur: 3, stroke: false }
+          fontStyle: 'bold'
         }).setOrigin(0.5);
         btn.setInteractive({ useHandCursor: true });
         // Add hover effects

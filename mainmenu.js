@@ -114,9 +114,9 @@ export class MainMenu extends Phaser.Scene {
             });
         }
 
-        // Smaller, better positioned logo
-        const logoY = isMobile ? height * 0.12 : height * 0.15;
-        const logoScale = isMobile ? 0.15 : 0.25;
+        // Smaller, better positioned logo with reduced top margin
+        const logoY = isMobile ? height * 0.08 : height * 0.15;
+        const logoScale = isMobile ? 0.12 : 0.25;
 
         // Subtle glow behind logo
         const logoGlow = this.add.circle(centerX, logoY, isMobile ? 35 : 50,
@@ -150,8 +150,8 @@ export class MainMenu extends Phaser.Scene {
         const isWideScreen = width > 1200;
         const fontScale = isWideScreen ? Math.max(1.2, width * 0.0015) : 1;
 
-        // Enhanced title with multiple glow layers and effects
-        const titleY = isMobile ? height * 0.25 : height * 0.28;
+        // Enhanced title with multiple glow layers and effects - reduced spacing
+        const titleY = isMobile ? height * 0.18 : height * 0.28;
         const titleFontSize = isMobile ? Math.round(width * 0.08) : (isWideScreen ? Math.round(42 * fontScale) : 42);
 
         // Background glow layers for depth
@@ -229,12 +229,12 @@ export class MainMenu extends Phaser.Scene {
             if (mode === 'puzzle') return 'Puzzle';
             return mode.charAt(0).toUpperCase() + mode.slice(1);
         };
-        // Enhanced responsive button configuration for all screen sizes
-        const btnStartY = isMobile ? height * 0.38 : height * 0.42;
-        const btnFontSize = isVerySmall ? Math.round(width * 0.03) : (isMobile ? Math.round(width * 0.035) : Math.round(18 * fontScale));
+        // Enhanced responsive button configuration with reduced margins for mobile/tablet
+        const btnStartY = isMobile ? height * 0.32 : height * 0.42;
+        const btnFontSize = isVerySmall ? Math.round(width * 0.04) : (isMobile ? Math.round(width * 0.045) : Math.round(18 * fontScale));
         const btnPadding = isMobile ? 8 : (isWideScreen ? 16 : 12);
-        const btnWidth = isVerySmall ? width * 0.35 : (isMobile ? width * 0.4 : (isWideScreen ? Math.min(280, width * 0.2) : 180));
-        const btnHeight = isVerySmall ? 32 : (isMobile ? 35 : (isWideScreen ? Math.round(42 * fontScale) : 42));
+        const btnWidth = isVerySmall ? width * 0.42 : (isMobile ? width * 0.45 : (isWideScreen ? Math.min(280, width * 0.2) : 180));
+        const btnHeight = isVerySmall ? 40 : (isMobile ? 45 : (isWideScreen ? Math.round(42 * fontScale) : 42));
 
         // Create beautiful button style with gradients
         const createButton = (x, y, text, primaryColor, secondaryColor) => {
@@ -274,8 +274,8 @@ export class MainMenu extends Phaser.Scene {
         const cols = isMobile ? 2 : 2;
         const rows = 4;
 
-        // Ensure buttons fit within screen bounds with adequate padding
-        const sidePadding = isVerySmall ? 10 : 20; // Less padding on very small screens
+        // Ensure buttons fit within screen bounds with minimal padding for more space
+        const sidePadding = isVerySmall ? 5 : (isMobile ? 10 : 20); // Minimal padding on mobile
         const maxButtonWidth = btnWidth;
         const availableWidth = width - (sidePadding * 2);
 
@@ -287,10 +287,10 @@ export class MainMenu extends Phaser.Scene {
             const remainingSpace = availableWidth - totalButtonWidth;
             spacingX = Math.max(10, remainingSpace / (cols + 1)); // Min 10px gap
         } else {
-            spacingX = isMobile ? width * 0.25 : (isWideScreen ? Math.min(320, width * 0.22) : 200);
+            spacingX = isMobile ? width * 0.3 : (isWideScreen ? Math.min(320, width * 0.22) : 200);
         }
 
-        const spacingY = isVerySmall ? height * 0.06 : (isMobile ? height * 0.08 : 55);
+        const spacingY = isVerySmall ? height * 0.08 : (isMobile ? height * 0.1 : 55);
 
         // Calculate startX to center the button grid
         const totalGridWidth = (cols - 1) * spacingX + maxButtonWidth;
@@ -379,12 +379,12 @@ export class MainMenu extends Phaser.Scene {
                 });
             });
         });
-        // Beautiful START button closer to other buttons
+        // Beautiful START button closer to other buttons with better mobile spacing
         // Calculate position after the last row of buttons (4 rows total, 0-indexed so row 3)
         const lastRowY = btnStartY + 3 * spacingY;
-        const startY = lastRowY + (isVerySmall ? 35 : (isMobile ? 45 : 55));
-        const startBtnWidth = isVerySmall ? width * 0.5 : (isMobile ? width * 0.6 : (isWideScreen ? Math.min(320, width * 0.25) : 220));
-        const startBtnHeight = isVerySmall ? 40 : (isMobile ? 45 : 55);
+        const startY = lastRowY + (isVerySmall ? 25 : (isMobile ? 35 : 55));
+        const startBtnWidth = isVerySmall ? width * 0.6 : (isMobile ? width * 0.7 : (isWideScreen ? Math.min(320, width * 0.25) : 220));
+        const startBtnHeight = isVerySmall ? 45 : (isMobile ? 50 : 55);
 
         // Start button background with animated gradient
         const startBg = this.add.graphics();
