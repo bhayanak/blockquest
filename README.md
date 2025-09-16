@@ -14,7 +14,7 @@
 - **Game Modes:**
   - **Adventure Mode:** Progress through chapters with unique challenges and unlockable content.
   - **Puzzle Mode:** Solve handcrafted puzzles with specific solutions.
-  - **Endless Mode:** Play for as long as you can, aiming for a high score.
+  - **Endless Mode:** Play for as long as you can, aiming for a high score. use score to use powers.
   - **Normal/Daily Mode:** Standard play or daily challenge.
 
 - **Power-Ups:**
@@ -28,17 +28,6 @@
   - Spend coins to buy power-ups.
   - Coins are persistent across sessions.
 
-- **UI/UX:**
-  - Animated, glossy main menu with logo and effects.
-  - Theme selector (multiple color themes).
-  - Difficulty selector (Easy/Difficult).
-  - Stats and progress tracking (best score, total games, lines cleared, puzzles solved, streaks, etc.).
-  - Puzzle pack selection and progress reset.
-  - Adventure chapter selection and progress display.
-  - Responsive design for desktop and tablet.
-
-- **Hidden Features:**
-  - Secret cheat code: Press `Ctrl+Shift+C` to add 10 coins (for testing or fun).
 
 ## How to Play
 
@@ -57,9 +46,8 @@
 
 ## Credits
 
-- Game design and development: [Your Name/Team]
+- Game design and development: [fazorboy/Bhayanak]
 - Built with [Phaser 3](https://phaser.io/)
-- Logo and assets: [Attribution or your own]
 
 ---
 Enjoy playing **BlockQuest** and challenge yourself to master every mode!
