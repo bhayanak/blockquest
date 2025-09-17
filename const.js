@@ -153,6 +153,10 @@ export const SHAPE_PATTERNS_EASY = [
   [[1], [1]],
   // Small line (1)
   [[1]],
+  //T up shape (3)
+  [[0, 1, 0], [1, 1, 1]],
+  //T down shape (3)
+  [[1, 1, 1], [0, 1, 0]],
 ];
 
 export const SHAPE_PATTERNS_DIFFICULT = [
@@ -203,4 +207,8 @@ export const SHAPE_PATTERNS_DIFFICULT = [
   [[1, 0], [1, 1], [0, 1]],
   // Z down
   [[0, 1], [1, 1], [1, 0]],
+  //T left shape (3)
+  [[1, 0], [1, 1], [1, 0]],
+  //T right shape (3)
+  [[0, 1], [1, 1], [0, 1]]
 ];

@@ -114,12 +114,13 @@ export class MainMenu extends Phaser.Scene {
             });
         }
 
-        // Smaller, better positioned logo with reduced top margin
-        const logoY = isMobile ? height * 0.08 : height * 0.15;
+        // True left-aligned layout - no wasted space
+        const logoY = isMobile ? height * 0.05 : height * 0.15;
         const logoScale = isMobile ? 0.12 : 0.25;
+        const logoX = isMobile ? (sidePadding + 50) : centerX; // Left-aligned on mobile
 
         // Subtle glow behind logo
-        const logoGlow = this.add.circle(centerX, logoY, isMobile ? 35 : 50,
+        const logoGlow = this.add.circle(logoX, logoY, isMobile ? 35 : 50,
             parseInt(theme.button.color.replace('#', '0x')), 0.15);
         this.tweens.add({
             targets: logoGlow,
@@ -131,7 +132,7 @@ export class MainMenu extends Phaser.Scene {
             repeat: -1
         });
 
-        this.logo = this.add.image(centerX, logoY, 'logo')
+        this.logo = this.add.image(logoX, logoY, 'logo')
             .setScale(logoScale)
             .setOrigin(0.5, 0.5);
 
@@ -150,12 +151,13 @@ export class MainMenu extends Phaser.Scene {
         const isWideScreen = width > 1200;
         const fontScale = isWideScreen ? Math.max(1.2, width * 0.0015) : 1;
 
-        // Enhanced title with multiple glow layers and effects - reduced spacing
-        const titleY = isMobile ? height * 0.18 : height * 0.28;
-        const titleFontSize = isMobile ? Math.round(width * 0.08) : (isWideScreen ? Math.round(42 * fontScale) : 42);
+        // Title left-aligned with DOUBLED font size for thick text
+        const titleY = isMobile ? height * 0.12 : height * 0.28;
+        const titleFontSize = isMobile ? Math.round(width * 0.24) : (isWideScreen ? Math.round(84 * fontScale) : 84); // DOUBLED font size
+        const titleX = isMobile ? (sidePadding + 50) : centerX; // Left-aligned on mobile
 
         // Background glow layers for depth
-        const titleGlow1 = this.add.text(centerX, titleY, 'BlockQuest', {
+        const titleGlow1 = this.add.text(titleX, titleY, 'BlockQuest', {
             fontFamily: 'Poppins, sans-serif',
             fontSize: titleFontSize,
             fontStyle: 'bold',
@@ -163,7 +165,7 @@ export class MainMenu extends Phaser.Scene {
             alpha: 0.3
         }).setOrigin(0.5).setScale(1.1);
 
-        const titleGlow2 = this.add.text(centerX, titleY, 'BlockQuest', {
+        const titleGlow2 = this.add.text(titleX, titleY, 'BlockQuest', {
             fontFamily: 'Poppins, sans-serif',
             fontSize: titleFontSize,
             fontStyle: 'bold',
@@ -172,7 +174,7 @@ export class MainMenu extends Phaser.Scene {
         }).setOrigin(0.5).setScale(1.05);
 
         // Main title with enhanced effects
-        this.titleText = this.add.text(centerX, titleY, 'BlockQuest', {
+        this.titleText = this.add.text(titleX, titleY, 'BlockQuest', {
             fontFamily: 'Poppins, sans-serif',
             fontSize: titleFontSize,
             fontStyle: 'bold',
@@ -229,12 +231,12 @@ export class MainMenu extends Phaser.Scene {
             if (mode === 'puzzle') return 'Puzzle';
             return mode.charAt(0).toUpperCase() + mode.slice(1);
         };
-        // Enhanced responsive button configuration with reduced margins for mobile/tablet
-        const btnStartY = isMobile ? height * 0.32 : height * 0.42;
-        const btnFontSize = isVerySmall ? Math.round(width * 0.04) : (isMobile ? Math.round(width * 0.045) : Math.round(18 * fontScale));
+        // True full-width button configuration with DOUBLED fonts for thick text
+        const btnStartY = isMobile ? height * 0.2 : height * 0.42;
+        const btnFontSize = isVerySmall ? Math.round(width * 0.11) : (isMobile ? Math.round(width * 0.12) : Math.round(36 * fontScale)); // DOUBLED font sizes
         const btnPadding = isMobile ? 8 : (isWideScreen ? 16 : 12);
-        const btnWidth = isVerySmall ? width * 0.42 : (isMobile ? width * 0.45 : (isWideScreen ? Math.min(280, width * 0.2) : 180));
-        const btnHeight = isVerySmall ? 40 : (isMobile ? 45 : (isWideScreen ? Math.round(42 * fontScale) : 42));
+        const btnWidth = isVerySmall ? width * 0.49 : (isMobile ? width * 0.49 : (isWideScreen ? Math.min(280, width * 0.2) : 180));
+        const btnHeight = isVerySmall ? 70 : (isMobile ? 75 : (isWideScreen ? Math.round(84 * fontScale) : 84)); // DOUBLED button heights for thick text
 
         // Create beautiful button style with gradients
         const createButton = (x, y, text, primaryColor, secondaryColor) => {
@@ -246,12 +248,12 @@ export class MainMenu extends Phaser.Scene {
                 parseInt(primaryColor.replace('#', '0x')),
                 parseInt(secondaryColor.replace('#', '0x'))
             );
-            btnBg.fillRoundedRect(x - btnWidth / 2, y - btnHeight / 2, btnWidth, btnHeight, 12);
+            btnBg.fillRoundedRect(x - buttonWidth / 2, y - btnHeight / 2, buttonWidth, btnHeight, 12);
 
             // Button glow effect
             const btnGlow = this.add.graphics();
             btnGlow.fillStyle(parseInt(primaryColor.replace('#', '0x')), 0.3);
-            btnGlow.fillRoundedRect(x - btnWidth / 2 - 2, y - btnHeight / 2 - 2, btnWidth + 4, btnHeight + 4, 14);
+            btnGlow.fillRoundedRect(x - buttonWidth / 2 - 2, y - btnHeight / 2 - 2, buttonWidth + 4, btnHeight + 4, 14);
             btnGlow.setVisible(false);
 
             // Button text
@@ -264,7 +266,7 @@ export class MainMenu extends Phaser.Scene {
             }).setOrigin(0.5);
 
             // Make interactive
-            const hitArea = this.add.rectangle(x, y, btnWidth, btnHeight, 0x000000, 0);
+            const hitArea = this.add.rectangle(x, y, buttonWidth, btnHeight, 0x000000, 0);
             hitArea.setInteractive({ useHandCursor: true });
 
             return { bg: btnBg, glow: btnGlow, text: btnText, hitArea };
@@ -274,27 +276,17 @@ export class MainMenu extends Phaser.Scene {
         const cols = isMobile ? 2 : 2;
         const rows = 4;
 
-        // Ensure buttons fit within screen bounds with minimal padding for more space
-        const sidePadding = isVerySmall ? 5 : (isMobile ? 10 : 20); // Minimal padding on mobile
-        const maxButtonWidth = btnWidth;
+        // ABSOLUTE edge-to-edge layout - zero waste
+        const sidePadding = isMobile ? 2 : 15;
+        const buttonGap = isMobile ? 4 : 10; // Minimal gap between buttons
         const availableWidth = width - (sidePadding * 2);
+        const buttonWidth = (availableWidth - buttonGap) / 2; // Two buttons per row with gap
 
-        // Calculate spacing to center buttons properly
-        let spacingX;
-        if (isVerySmall) {
-            // For very small screens, use minimal spacing and ensure centering
-            const totalButtonWidth = maxButtonWidth * cols;
-            const remainingSpace = availableWidth - totalButtonWidth;
-            spacingX = Math.max(10, remainingSpace / (cols + 1)); // Min 10px gap
-        } else {
-            spacingX = isMobile ? width * 0.3 : (isWideScreen ? Math.min(320, width * 0.22) : 200);
-        }
+        const spacingY = isVerySmall ? height * 0.1 : (isMobile ? height * 0.12 : 90); // Increased spacing for larger buttons
 
-        const spacingY = isVerySmall ? height * 0.08 : (isMobile ? height * 0.1 : 55);
-
-        // Calculate startX to center the button grid
-        const totalGridWidth = (cols - 1) * spacingX + maxButtonWidth;
-        const startX = (width - totalGridWidth) / 2 + maxButtonWidth / 2;
+        // Start from left edge
+        const leftButtonX = sidePadding + buttonWidth / 2;
+        const rightButtonX = sidePadding + buttonWidth + buttonGap + buttonWidth / 2;
 
         // Button colors for visual variety
         const buttonColors = [
@@ -308,7 +300,8 @@ export class MainMenu extends Phaser.Scene {
             { primary: '#00CEC9', secondary: '#00B894' }  // Cyan
         ];
 
-        // Create main menu buttons
+        // Create main menu buttons with current theme name
+        const currentTheme = THEMES[GameScene.activeThemeIdx];
         const buttons = [
             { text: 'Puzzle Packs', action: () => this.showPuzzlePackMenu() },
             { text: 'Adventure', action: () => this.showAdventureMenu() },
@@ -316,7 +309,7 @@ export class MainMenu extends Phaser.Scene {
             { text: 'Power-Ups', action: () => this.showPowerUpsMenu() },
             { text: 'Mode: Normal', action: () => this.toggleMode() },
             { text: 'Difficulty: Easy', action: () => this.toggleDifficulty() },
-            { text: 'Theme: Vibrant', action: () => this.nextTheme() },
+            { text: `Theme: ${currentTheme.name}`, action: () => this.nextTheme() },
             { text: 'Endless: Off', action: () => this.toggleEndless() }
         ];
 
@@ -324,7 +317,7 @@ export class MainMenu extends Phaser.Scene {
         buttons.forEach((btn, index) => {
             const row = Math.floor(index / cols);
             const col = index % cols;
-            const x = startX + col * spacingX;
+            const x = col === 0 ? leftButtonX : rightButtonX; // Left or right button position
             const y = btnStartY + row * spacingY;
             const colorSet = buttonColors[index % buttonColors.length];
 
@@ -379,22 +372,44 @@ export class MainMenu extends Phaser.Scene {
                 });
             });
         });
-        // Beautiful START button closer to other buttons with better mobile spacing
+        // START button with much larger spacing to prevent overlap with doubled-size buttons
         // Calculate position after the last row of buttons (4 rows total, 0-indexed so row 3)
         const lastRowY = btnStartY + 3 * spacingY;
-        const startY = lastRowY + (isVerySmall ? 25 : (isMobile ? 35 : 55));
-        const startBtnWidth = isVerySmall ? width * 0.6 : (isMobile ? width * 0.7 : (isWideScreen ? Math.min(320, width * 0.25) : 220));
-        const startBtnHeight = isVerySmall ? 45 : (isMobile ? 50 : 55);
+        const startY = lastRowY + (isVerySmall ? 80 : (isMobile ? 90 : 110)); // Much larger spacing for doubled button heights
+
+        // Calculate START button width to fit doubled text
+        const startFontSize = isMobile ? Math.round(width * 0.12) : 48;
+        const tempStartText = this.add.text(0, 0, 'START GAME', { fontSize: startFontSize, fontStyle: 'bold' });
+        const startTextWidth = tempStartText.width + 40; // Add padding for button
+        tempStartText.destroy();
+
+        const startBtnWidth = Math.max(startTextWidth, isVerySmall ? (width - sidePadding * 2) : (isMobile ? (width - sidePadding * 2) : 300));
+        const startBtnHeight = isVerySmall ? 70 : (isMobile ? 75 : 85); // Increased to match doubled font size
+
+        // Start button - left aligned like other elements
+        const startBtnX = isMobile ? (sidePadding + startBtnWidth / 2) : centerX; // Left-aligned on mobile
 
         // Start button background with animated gradient
         const startBg = this.add.graphics();
         startBg.fillGradientStyle(0xFF6B35, 0xF7931E, 0xFF6B35, 0xF7931E);
-        startBg.fillRoundedRect(centerX - startBtnWidth / 2, startY - startBtnHeight / 2, startBtnWidth, startBtnHeight, 16);
+        if (isMobile) {
+            // True full-width mobile layout - edge to edge
+            startBg.fillRoundedRect(sidePadding, startY - startBtnHeight / 2, startBtnWidth, startBtnHeight, 16);
+        } else {
+            // Centered desktop layout
+            startBg.fillRoundedRect(startBtnX - startBtnWidth / 2, startY - startBtnHeight / 2, startBtnWidth, startBtnHeight, 16);
+        }
 
         // Start button glow
         const startGlow = this.add.graphics();
         startGlow.fillStyle(0xFF6B35, 0.4);
-        startGlow.fillRoundedRect(centerX - startBtnWidth / 2 - 3, startY - startBtnHeight / 2 - 3, startBtnWidth + 6, startBtnHeight + 6, 18);
+        if (isMobile) {
+            // True full-width mobile layout - edge to edge
+            startGlow.fillRoundedRect(sidePadding - 3, startY - startBtnHeight / 2 - 3, startBtnWidth + 6, startBtnHeight + 6, 18);
+        } else {
+            // Centered desktop layout
+            startGlow.fillRoundedRect(startBtnX - startBtnWidth / 2 - 3, startY - startBtnHeight / 2 - 3, startBtnWidth + 6, startBtnHeight + 6, 18);
+        }
 
         // Animated glow effect
         this.tweens.add({
@@ -407,17 +422,17 @@ export class MainMenu extends Phaser.Scene {
             repeat: -1
         });
 
-        // Start button text
-        const startText = this.add.text(centerX, startY, 'START GAME', {
+        // Start button text with DOUBLED font for thick appearance
+        const startText = this.add.text(startBtnX, startY, 'START GAME', {
             fontFamily: 'Poppins, sans-serif',
-            fontSize: isMobile ? 20 : (isWideScreen ? Math.round(24 * fontScale) : 24),
+            fontSize: isMobile ? Math.round(width * 0.12) : (isWideScreen ? Math.round(48 * fontScale) : 48), // DOUBLED font size
             fontStyle: 'bold',
             color: '#ffffff',
             shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4 }
         }).setOrigin(0.5);
 
         // Start button interaction
-        const startHitArea = this.add.rectangle(centerX, startY, startBtnWidth, startBtnHeight, 0x000000, 0);
+        const startHitArea = this.add.rectangle(startBtnX, startY, startBtnWidth, startBtnHeight, 0x000000, 0);
         startHitArea.setInteractive({ useHandCursor: true });
 
         startHitArea.on('pointerover', () => {

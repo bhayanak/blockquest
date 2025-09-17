@@ -41,6 +41,10 @@ const SHAPE_PATTERNS = [
   [[1], [1]],
   // Small line (1)
   [[1]],
+  //T up shape (3)
+  [[0, 1, 0], [1, 1, 1]],
+  //T down shape (3)
+  [[1, 1, 1], [0, 1, 0]]
 ];
 
 const BLOCK_COLORS = [

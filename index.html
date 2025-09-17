@@ -18,8 +18,16 @@
       width: 100vw; 
       height: 100vh; 
       display: flex;
-      justify-content: center;
-      align-items: center;
+      justify-content: center; /* Center on all screens initially */
+      align-items: center; /* Center on all screens initially */
+    }
+    
+    /* Mobile-specific styles */
+    @media (max-width: 600px) {
+      #game-container {
+        justify-content: flex-start; /* Left-align on mobile for space efficiency */
+        align-items: flex-start; /* Top-align on mobile for space efficiency */
+      }
     }
     canvas {
       display: block;

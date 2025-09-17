@@ -376,33 +376,34 @@ export class GameScene extends Phaser.Scene {
     const coinFontSize = isMobile ? Math.round(width * 0.03) : Math.round(20 * baseFontScale);
     const speakerFontSize = isMobile ? Math.round(width * 0.03) : Math.round(24 * baseFontScale);
 
-    const leftPad = isMobile ? (isSmallMobile ? 8 : 12) : (isWideScreen ? 60 : 40);
+    const leftPad = isMobile ? 3 : (isWideScreen ? 40 : 25); // Absolute minimal left padding
     const topPad = isMobile ? (isSmallMobile ? 8 : 10) : (isWideScreen ? 40 : 30);
-
-    // Scale right-side element positions for wide screens with proper padding
-    // Use larger padding on mobile to prevent clipping, especially on small screens
-    const rightPadding = isMobile ? (isSmallMobile ? 80 : 60) : 40;
-    const coinRight = isMobile ? width - rightPadding : (isWideScreen ? width - 200 : Math.min(width - 40, 860));
-    const speakerRight = isMobile ? width - rightPadding - 50 : (isWideScreen ? width - 250 : Math.min(width - 100, 800));
 
     // Responsive grid and tray positioning with dramatically improved scaling
     this.gridSize = 10;
-    // Much more aggressive scaling for better mobile vs desktop difference
+    // Much more aggressive scaling + 5% increase to fill right space (reduced from 7%)
     let baseCellSize;
-    if (isSmallMobile) baseCellSize = Math.max(35, width * 0.08);
-    else if (isMobile) baseCellSize = Math.max(45, width * 0.085);
-    else if (isWideScreen) baseCellSize = Math.max(65, Math.min(95, width * 0.07));
-    else baseCellSize = Math.max(55, width * 0.065);
+    if (isSmallMobile) baseCellSize = Math.max(35, width * 0.084); // +5% (0.08 * 1.05)
+    else if (isMobile) baseCellSize = Math.max(45, width * 0.08925); // +5% (0.085 * 1.05)
+    else if (isWideScreen) baseCellSize = Math.max(65, Math.min(95, width * 0.0735)); // +5% (0.07 * 1.05)
+    else baseCellSize = Math.max(55, width * 0.06825); // +5% (0.065 * 1.05)
 
     this.cellSize = Math.round(baseCellSize);
-    const gridWidth = this.gridSize * this.cellSize;
-    const gridHeight = this.gridSize * this.cellSize;
+    this.gridWidth = this.gridSize * this.cellSize;
+    this.gridHeight = this.gridSize * this.cellSize;
+    const gridWidth = this.gridWidth;
+    const gridHeight = this.gridHeight;
 
     // Left-align the grid for better mobile/tablet experience
     const gridTopMargin = isMobile ? (isSmallMobile ? 140 : 150) : (isWideScreen ? 120 : 130);
 
-    // Left-align with minimal padding for more space
-    const gridSidePadding = isMobile ? (isSmallMobile ? 8 : 10) : 15;
+    // Zero waste padding - absolute minimal margins  
+    const gridSidePadding = isMobile ? 2 : 8;
+
+    // Position coin and speaker as requested
+    const gridRightEdge = gridSidePadding + gridWidth;
+    const coinRight = gridRightEdge + 35; // Back to 35px as requested
+    const speakerRight = gridRightEdge + 35;
 
     this.gridOrigin = {
       x: gridSidePadding,
@@ -437,11 +438,12 @@ export class GameScene extends Phaser.Scene {
     }
     if (this.coinText) {
       this.coinText.setFontSize(coinFontSize);
-      this.coinText.setPosition(coinRight, topPad, 1, 0);
+      const coinY = isMobile ? topPad + scoreFontSize + 45 : topPad + 50;
+      this.coinText.setPosition(coinRight - 20, coinY + 10);
     }
-    if (this.speakerButton) {
-      this.speakerButton.setFontSize(speakerFontSize);
-      this.speakerButton.setPosition(speakerRight, topPad + (isMobile ? 30 : 35), 1, 0);
+    if (this.speakerIcon) {
+      this.speakerIcon.setFontSize(speakerFontSize);
+      this.speakerIcon.setPosition(speakerRight - (speakerFontSize / 2) - 8, topPad + (speakerFontSize / 2) + 8);
     }
 
     // Redraw grid with new dimensions
@@ -515,13 +517,18 @@ export class GameScene extends Phaser.Scene {
       });
     }
     // Score and high score text with modern design
-    const scoreContainer = this.add.rectangle(leftPad + (isMobile ? 120 : 140), topPad + (scoreFontSize / 2) + 8, isMobile ? 240 : 280, scoreFontSize + 16, 0x1a1a2e, 0.9).setOrigin(0.5);
+    // Calculate score text width for fit-to-text container
+    const tempScoreText = this.add.text(0, 0, 'Score: 999999', { fontFamily, fontSize: scoreFontSize, fontStyle: 'bold' });
+    const scoreTextWidth = tempScoreText.width + 20; // Add padding
+    tempScoreText.destroy();
+
+    const scoreContainer = this.add.rectangle(leftPad + scoreTextWidth / 2, topPad + (scoreFontSize / 2) + 8, scoreTextWidth, scoreFontSize + 16, 0x1a1a2e, 0.9).setOrigin(0.5);
     scoreContainer.setStrokeStyle(2, 0x16213e);
     this.add.graphics()
       .fillGradientStyle(0x7209b7, 0xa663cc, 0x7209b7, 0xa663cc)
-      .fillRoundedRect(leftPad + (isMobile ? 120 : 140) - (isMobile ? 118 : 138), topPad + 6, isMobile ? 236 : 276, scoreFontSize + 12, 8);
+      .fillRoundedRect(leftPad + 2, topPad + 6, scoreTextWidth - 4, scoreFontSize + 12, 8);
 
-    this.scoreText = this.add.text(leftPad + (isMobile ? 120 : 140), topPad + (scoreFontSize / 2) + 8, 'Score: 0', {
+    this.scoreText = this.add.text(leftPad + scoreTextWidth / 2, topPad + (scoreFontSize / 2) + 8, 'Score: 0', {
       fontFamily,
       fontSize: scoreFontSize,
       color: '#ffffff',
@@ -530,13 +537,19 @@ export class GameScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     const highScoreY = topPad + scoreFontSize + 30;
-    const highScoreContainer = this.add.rectangle(leftPad + (isMobile ? 120 : 140), highScoreY + (highScoreFontSize / 2) + 6, isMobile ? 240 : 280, highScoreFontSize + 12, 0x0f3460, 0.9).setOrigin(0.5);
+
+    // Calculate high score text width for fit-to-text container
+    const tempHighScoreText = this.add.text(0, 0, 'High Score: 999999', { fontFamily, fontSize: highScoreFontSize, fontStyle: 'bold' });
+    const highScoreTextWidth = tempHighScoreText.width + 20; // Add padding
+    tempHighScoreText.destroy();
+
+    const highScoreContainer = this.add.rectangle(leftPad + highScoreTextWidth / 2, highScoreY + (highScoreFontSize / 2) + 6, highScoreTextWidth, highScoreFontSize + 12, 0x0f3460, 0.9).setOrigin(0.5);
     highScoreContainer.setStrokeStyle(2, 0x16537e);
     this.add.graphics()
       .fillGradientStyle(0x2196f3, 0x64b5f6, 0x2196f3, 0x64b5f6)
-      .fillRoundedRect(leftPad + (isMobile ? 120 : 140) - (isMobile ? 118 : 138), highScoreY + 2, isMobile ? 236 : 276, highScoreFontSize + 8, 6);
+      .fillRoundedRect(leftPad + 2, highScoreY + 2, highScoreTextWidth - 4, highScoreFontSize + 8, 6);
 
-    this.highScoreText = this.add.text(leftPad + (isMobile ? 120 : 140), highScoreY + (highScoreFontSize / 2) + 6, 'High Score: ' + this.highScore, {
+    this.highScoreText = this.add.text(leftPad + highScoreTextWidth / 2, highScoreY + (highScoreFontSize / 2) + 6, 'High Score: ' + this.highScore, {
       fontFamily,
       fontSize: highScoreFontSize,
       color: '#ffffff',
@@ -570,22 +583,28 @@ export class GameScene extends Phaser.Scene {
     if (this.sound) {
       this.sound.mute = !this.isAudioOn;
     }
-    // Coin display with modern golden design
+    // Position coin display near grid area
     import('./powerups.js').then(module => {
-      const coinX = isMobile ? width - 16 : 860;
-      const coinY = isMobile ? topPad + scoreFontSize + 70 : 90;
-      const coinContainer = this.add.rectangle(coinX - 60, coinY + 14, 120, coinFontSize + 12, 0x1a1a2e, 0.9).setOrigin(1, 0);
+      const coinX = coinRight;
+      const coinY = isMobile ? topPad + scoreFontSize + 45 : topPad + 50;
+      // Compact coin display that fits content
+      const coinTextContent = '⭑ ' + (module.getCoins ? module.getCoins() : 0);
+      const tempText = this.add.text(0, 0, coinTextContent, { fontSize: coinFontSize, fontFamily });
+      const coinTextWidth = tempText.width + 16;
+      const coinTextHeight = tempText.height + 8;
+      tempText.destroy();
+
+      const coinContainer = this.add.rectangle(coinX - coinTextWidth / 2, coinY + coinTextHeight / 2, coinTextWidth, coinTextHeight, 0x1a1a2e, 0.9).setOrigin(1, 0);
       coinContainer.setStrokeStyle(2, 0x16213e);
       this.add.graphics()
         .fillGradientStyle(0xffd700, 0xffed4e, 0xffc107, 0xffab00)
-        .fillRoundedRect(coinX - 118, coinY + 2, 116, coinFontSize + 8, 8);
+        .fillRoundedRect(coinX - coinTextWidth - 2, coinY + 2, coinTextWidth, coinTextHeight, 6);
 
-      this.coinText = this.add.text(coinX - 60, coinY + 14, '⭑ ' + (module.getCoins ? module.getCoins() : 0), {
+      this.coinText = this.add.text(coinX - coinTextWidth / 2, coinY + coinTextHeight / 2 + 6, coinTextContent, {
         fontFamily,
         fontSize: coinFontSize,
         color: '#1a1a2e',
-        fontStyle: 'bold',
-        shadow: { offsetX: 1, offsetY: 1, color: '#ffffff', blur: 2, stroke: true }
+        fontStyle: 'bold'
       }).setOrigin(0.5);
       this.children.bringToTop(this.coinText);
       this.children.bringToTop(this.speakerIcon);
@@ -594,11 +613,30 @@ export class GameScene extends Phaser.Scene {
           this.coinText.setText('⭑ ' + (mod.getCoins ? mod.getCoins() : 0));
         });
       };
-      // Power-up UI panel with compact design positioned on right
-      const panelX = isMobile ? width - 70 : width - 90;
-      const panelY = isMobile ? 280 : 220;
-      const panelBg = this.add.rectangle(panelX, panelY, isMobile ? 130 : 150, 150, 0x1a1a2e, 0.95).setOrigin(0.5);
-      panelBg.setStrokeStyle(3, 0x16213e);
+      // Power-up panel positioned to eliminate right-side waste while maintaining 50px from grid
+      const gameGridRightEdge = this.gridOrigin.x + this.gridWidth;
+      const powerUpPanelWidth = isMobile ? 120 : 140;
+      const rightMargin = 10; // Minimal right margin
+
+      // Position panel from right edge to eliminate wasted space
+      const panelFromRight = width - powerUpPanelWidth / 2 - rightMargin;
+      const panelFromGrid = gameGridRightEdge + 50;
+
+      // Use whichever is closer to eliminate waste (prefer right-edge positioning on small screens)
+      const panelX = isMobile ? Math.min(panelFromRight, panelFromGrid) : panelFromGrid;
+      const panelY = isMobile ? this.gridOrigin.y + 80 : this.gridOrigin.y + 60;
+      // Make panel more visible with better styling
+      const panelHeight = 140;
+      const panelBg = this.add.rectangle(panelX, panelY, powerUpPanelWidth, panelHeight, 0x2c3e50, 0.95).setOrigin(0.5);
+      panelBg.setStrokeStyle(3, 0x3498db);
+
+      // Add panel title for clarity
+      this.add.text(panelX, panelY - 65, 'Power-ups', {
+        fontFamily,
+        fontSize: isMobile ? 14 : 16,
+        color: '#ffffff',
+        fontStyle: 'bold'
+      }).setOrigin(0.5);
 
       const typeLabels = { CLEAR_ROW: 'Row', SWAP_TRAY: 'Swap', EXTRA_UNDO: 'Undo' };
       const buttonColors = [
@@ -607,7 +645,7 @@ export class GameScene extends Phaser.Scene {
         { primary: 0x4caf50, secondary: 0x81c784 }  // Green
       ];
       const yStart = panelY - 50;
-      const yStep = 36;
+      const yStep = 35;
       this.powerupButtons = {};
 
       Object.keys(module.POWERUP_TYPES).forEach((type, idx) => {
@@ -628,13 +666,17 @@ export class GameScene extends Phaser.Scene {
         const btnWidth = Math.max(textWidth + 16, isMobile ? 80 : 90);
         const btnHeight = Math.max(textHeight + 8, 28);
 
-        const btnBg = this.add.rectangle(panelX, yStart + idx * yStep, btnWidth, btnHeight, colors.primary, count > 0 ? 1 : 0.4).setOrigin(0.5);
+        // Create more visible button background
+        const btnY = yStart + idx * yStep;
+        const btnBg = this.add.rectangle(panelX, btnY, btnWidth, btnHeight, colors.primary, count > 0 ? 1 : 0.6).setOrigin(0.5);
         btnBg.setStrokeStyle(2, colors.secondary);
-        this.add.graphics()
-          .fillGradientStyle(colors.primary, colors.secondary, colors.primary, colors.secondary)
-          .fillRoundedRect(panelX - btnWidth / 2, yStart + idx * yStep - btnHeight / 2, btnWidth, btnHeight, 6);
 
-        const btn = this.add.text(panelX, yStart + idx * yStep, label, {
+        // Add gradient background for better visibility
+        const gradient = this.add.graphics();
+        gradient.fillGradientStyle(colors.primary, colors.secondary, colors.primary, colors.secondary);
+        gradient.fillRoundedRect(panelX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 6);
+
+        const btn = this.add.text(panelX, btnY, label, {
           fontFamily,
           fontSize: isMobile ? 16 : 18,
           color: '#ffffff',
@@ -1515,27 +1557,37 @@ export class GameScene extends Phaser.Scene {
   }
   updateOptionsDisplay() {
     const theme = GameScene.getActiveTheme();
-    let modeLabel = 'Mode: ' + (GameScene.GAME_MODE === 'normal' ? 'Normal' : GameScene.GAME_MODE === 'daily' ? 'Daily' : 'Puzzle');
-    let text = `${modeLabel}    Theme: ${theme.name}    Difficulty: ${GameScene.DIFFICULTY === 'easy' ? 'Easy' : 'Difficult'}`;
+    // Compact labels for mobile
+    const width = this.sys.game.config.width;
+    const isMobileOptions = width < 600;
+
+    let modeLabel = GameScene.GAME_MODE === 'normal' ? 'Normal' : GameScene.GAME_MODE === 'daily' ? 'Daily' : 'Puzzle';
+    let themeLabel = theme.name;
+    let diffLabel = GameScene.DIFFICULTY === 'easy' ? 'Easy' : 'Hard';
+
+    // Compact text - fit to content
+    let text = isMobileOptions ?
+      `${modeLabel} | ${themeLabel} | ${diffLabel}` :
+      `Mode: ${modeLabel}  Theme: ${themeLabel}  Difficulty: ${diffLabel}`;
+
     // Always destroy and recreate optionsText for robustness
     if (this.optionsText) {
       this.optionsText.destroy();
       this.optionsText = null;
     }
-    // Enhanced styling for options text with responsive font size and proper positioning
-    const isMobileOptions = this.sys.game.config.width < 600;
-    const optionsFontSize = isMobileOptions ? 14 : 16;
-    const optionsY = isMobileOptions ? this.sys.game.config.height - 40 : 90; // Move to bottom on mobile
-    const optionsX = isMobileOptions ? this.sys.game.config.width / 2 : 450;
+
+    // Compact styling - fit to content size
+    const optionsFontSize = isMobileOptions ? 12 : 14;
+    const optionsY = isMobileOptions ? this.sys.game.config.height - 30 : 85;
+    const optionsX = isMobileOptions ? width / 2 : width / 2;
 
     this.optionsText = this.add.text(optionsX, optionsY, text, {
       fontSize: optionsFontSize,
       color: '#ffffff',
       fontFamily: 'Poppins, Arial, sans-serif',
       fontStyle: 'bold',
-      backgroundColor: 'rgba(26, 26, 46, 0.9)',
-      padding: { left: 12, right: 12, top: 6, bottom: 6 },
-      shadow: { offsetX: 1, offsetY: 1, color: theme.button.color, blur: 3, stroke: true }
+      backgroundColor: 'rgba(26, 26, 46, 0.8)',
+      padding: { left: 8, right: 8, top: 4, bottom: 4 }
     }).setOrigin(0.5);
     this.children.bringToTop(this.optionsText);
 
@@ -1555,10 +1607,20 @@ export class GameScene extends Phaser.Scene {
   drawGrid() {
     const theme = GameScene.getActiveTheme();
     this.gridGraphics.clear();
-    this.gridGraphics.lineStyle(2, theme.gridLine, theme.gridLineAlpha);
+
+    // Use a more visible, colored grid with thicker lines
+    const gridColor = theme.gridLine || 0x4a90e2; // Default to a nice blue
+    const gridAlpha = 0.8; // More visible than theme.gridLineAlpha
+    const lineWidth = 3; // Thicker lines for better visibility
+
+    this.gridGraphics.lineStyle(lineWidth, gridColor, gridAlpha);
+
+    // Draw grid with rounded corners for better aesthetics
     for (let r = 0; r < this.gridSize; r++) {
       for (let c = 0; c < this.gridSize; c++) {
-        this.gridGraphics.strokeRect(this.gridOrigin.x + c * this.cellSize, this.gridOrigin.y + r * this.cellSize, this.cellSize, this.cellSize);
+        const x = this.gridOrigin.x + c * this.cellSize;
+        const y = this.gridOrigin.y + r * this.cellSize;
+        this.gridGraphics.strokeRoundedRect(x, y, this.cellSize, this.cellSize, 2);
       }
     }
   }
